@@ -2,10 +2,8 @@ package com.chiron.playpalyer.mediac
 
 import android.media.MediaCodec
 import android.media.MediaFormat
-import android.provider.MediaStore
 import android.util.Log
 import java.io.File
-import java.lang.Exception
 import java.nio.ByteBuffer
 
 abstract class BaseDecoder(private val mFilePath:String):IDecoder{
@@ -51,7 +49,7 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
      */
     private var mBufferInfo=MediaCodec.BufferInfo()
     private var mState=DecodeState.STOP
-    private var mStateListener:IDecoderStateListener?=null
+    protected var mStateListener:IDecoderStateListener?=null
     /**
      * 流数据是否结束
      */
@@ -61,6 +59,13 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
     private var mDuration: Long = 0
     private var mStartPos: Long = 0
     private var mEndPos: Long = 0
+
+    /**
+     * 开始解码时间，用于音视频同步
+     */
+    private var mStartTimeForSync = -1L
+    // 是否需要音视频同步渲染
+    private var mSyncRender = true
 
     /**
      * 解码流程定义
@@ -99,10 +104,16 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
             val index=pullBufferFromDecoder()
             if(index>=0){
                 //【解码步骤:4，渲染】
-                render(mOutputBuffer!![index],mBufferInfo)
+                if(mSyncRender){//如果只用于编码合成新视频，则无需渲染
+                    render(mOutputBuffers!![index],mBufferInfo)
+                }
                 //【解码步骤：5，释放缓冲区】
                 // 注：第二个参数，是个boolean，命名为render，
                 // 这个参数在视频解码时，用于决定是否要将这一帧数据显示出来。
+                /**
+                 * 视频的渲染并不需要客户端手动去渲染，只需提供绘制表面surface，调
+                 * 用releaseOutputBuffer，将第2个参数设置为true即可
+                 */
                 mCodec!!.releaseOutputBuffer(index,true)
                 if(mState==DecodeState.START){
                     mState=DecodeState.PAUSE
@@ -126,7 +137,7 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
     /**
      * 解码线程进入等待（这里算是等待通知模型的一种实现）
      */
-    private fun waitDecode(){
+    protected fun waitDecode(){
         try{
             if(mState==DecodeState.PAUSE){
                 mStateListener?.decoderPause(this)
@@ -142,13 +153,93 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
     /**
      * 通知解码线程继续执行
      */
-    private fun notifyDecode(){
+    protected fun notifyDecode(){
         synchronized(mLock){
             mLock.notifyAll()
         }
         if(mState==DecodeState.DECODING){
             mStateListener?.decoderRunning(this)
         }
+    }
+
+    override fun pause() {
+        mState=DecodeState.PAUSE
+    }
+
+    override fun resume() {
+        mState=DecodeState.DECODING
+        notifyDecode()
+    }
+
+    override fun seetTo(pos: Long): Long {
+        return 0
+    }
+
+    override fun seekAndPlay(pos: Long): Long {
+        return 0
+    }
+
+    override fun stop() {
+        mState=DecodeState.STOP
+        mIsRunning=false
+        notifyDecode()
+    }
+
+    override fun isDecoding(): Boolean {
+        return mState==DecodeState.DECODING
+    }
+
+    override fun isSeeking(): Boolean {
+        return mState==DecodeState.SEEKING
+    }
+
+    override fun isStop(): Boolean {
+        return mState==DecodeState.STOP
+    }
+
+    override fun setSizeListener(l: IDecoderProgress) {
+
+    }
+
+    override fun setStateListener(l: IDecoderStateListener?) {
+        mStateListener=l
+    }
+
+    override fun getWidth(): Int {
+        return mVideoWidth
+    }
+
+    override fun getHeight(): Int {
+        return mVideoHeight
+    }
+
+    override fun getDuration(): Long {
+        return mDuration
+    }
+
+    override fun getCurTimeStamp(): Long {
+        return mBufferInfo.presentationTimeUs/1000
+    }
+
+    override fun getRotationAngle(): Int {
+        return 0
+    }
+
+    override fun getMediaFormat(): MediaFormat? {
+        return mExtractor?.getFormat()
+    }
+
+    override fun getTrack(): Int {
+        return 0
+    }
+
+    override fun getFilePath(): String {
+        return mFilePath
+    }
+
+    override fun withoutStnc(): IDecoder {
+        mSyncRender = false
+        return this
     }
 
     /**
@@ -212,7 +303,7 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
             //1、根据音视频编码格式初始化解码器
             val type=mExtractor!!.getFormat()!!.getString(MediaFormat.KEY_MIME)
             mCodec= MediaCodec.createDecoderByType(type!!)
-            //2、配置解码器
+            //2、配置解码器（未配置的时候一直等待，surface初始化完毕之后再配置MediaCodec）
             if(!configDecodec(mCodec!!,mExtractor!!.getFormat()!!)){
                 waitDecode()
             }

@@ -70,7 +70,7 @@ interface IDecoder:Runnable {
     /**
      * 获取视频长度（播放时长）
      */
-    fun getDuration():Int
+    fun getDuration():Long
 
     /**
      * 获取当前视频播放的时间戳
