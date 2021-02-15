@@ -4,7 +4,7 @@ import android.media.MediaFormat
 import java.nio.ByteBuffer
 
 /**
- * 音视频分离器定义(音视频数据读取器)
+ * 音视频分离器定义(音视频数据读取器，TODO 内部使用定义的MMExtractor)
  * 用于将数据喂给MediaC的输入缓冲
  */
 interface IExtractor {
