@@ -71,27 +71,39 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
      * 解码流程定义
      */
     override fun run() {
-        mState=DecodeState.START
+        if(mState==DecodeState.STOP){
+            mState=DecodeState.START
+        }
         mStateListener?.let { it.decoderPrepare(this) }
 
         //【解码步骤：1，初始化，并且启动解码器】
         if(!init()){
             return
         }
-
+        Log.i(TAG,"开始解码")
         while (mIsRunning){//解码器在工作时做如下操作
 
             if (mState != DecodeState.START &&
                 mState != DecodeState.DECODING &&
                 mState != DecodeState.SEEKING
             ) {
+                Log.i(TAG,"DecodeState处于不支持状态，等待状态恢复正常")
                 waitDecode()
+                /**
+                 * 音视频同步时间，恢复同步的起始时间，即去除等待流失的时间
+                 * TODO 在数据解码出来以后，渲染之前进行同步
+                 */
+                mStartTimeForSync=System.currentTimeMillis()-getCurTimeStamp()
             }
 
             //解码器没有在运行或者当前解码器状态已经为停止状态则结束当前的while
             if(!mIsRunning || mState==DecodeState.STOP){
                 mIsRunning=false
                 break
+            }
+
+            if(mStartTimeForSync==-1L){
+                mStartTimeForSync=System.currentTimeMillis()
             }
 
             //如果数据没有解码完毕，将数据推入解码器解码
@@ -103,6 +115,11 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
             //【解码步骤:3，将解码完成的数据从输出缓冲区拉出来】
             val index=pullBufferFromDecoder()
             if(index>=0){
+                //【音视频同步】
+                if(mState==DecodeState.DECODING){
+                    sleepRender()
+                }
+
                 //【解码步骤:4，渲染】
                 if(mSyncRender){//如果只用于编码合成新视频，则无需渲染
                     render(mOutputBuffers!![index],mBufferInfo)
@@ -384,6 +401,21 @@ abstract class BaseDecoder(private val mFilePath:String):IDecoder{
             }
         }
         return -1
+    }
+
+    private fun sleepRender(){
+        //TODO 获取播放的时长
+        /**
+         * 若产生暂停 mStartTimeForSync = System.currentTimeMillis() - getCurTimeStamp()
+         * 当前系统时间-mStartTimeForSync也就是等于流失的时间+暂停的时间
+         */
+        val passTime=System.currentTimeMillis()-mStartTimeForSync
+        val curTime=getCurTimeStamp()
+        //TODO 说明解的太快了
+        if(curTime>passTime){
+            Thread.sleep(curTime-passTime)
+        }
+
     }
 
     private fun release(){
