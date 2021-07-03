@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion Integer.parseInt(project.COMPILE_SDK_VERSION)
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(project.MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.TARGET_SDK_VERSION)
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        externalNativeBuild{//用于控制native的编译
+            cmake{
+                cppFlags "-std=c++11 -frtti -fexceptions"//指定编译选项
+                abiFilters "arm64-v8a","armeabi-v7a"// 仅构建和封装原生库的特定 ABI 配置
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    externalNativeBuild{
+        cmake{
+            version project.CMAKE_VERSION
+            path "src/main/cpp/CMakeLists.txt"
+        }
+//            buildStagingDirectory "./outputs/cmake" //设置native构建之后文件存放位置
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['jniLibs']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
