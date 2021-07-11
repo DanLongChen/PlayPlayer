@@ -17,7 +17,7 @@ android {
         externalNativeBuild{//用于控制native的编译
             cmake{
                 cppFlags "-std=c++11 -frtti -fexceptions"//指定编译选项
-                abiFilters "arm64-v8a","armeabi-v7a"// 仅构建和封装原生库的特定 ABI 配置
+                abiFilters 'arm64-v8a','armeabi-v7a','x86','x86_64'// 仅构建和封装原生库的特定 ABI 配置(gradle中的双引号支持插值操作，单引号不支持)
             }
         }
     }
@@ -30,7 +30,7 @@ android {
     externalNativeBuild{
         cmake{
             version project.CMAKE_VERSION
-            path "src/main/cpp/CMakeLists.txt"
+            path "CMakeLists.txt"
         }
 //            buildStagingDirectory "./outputs/cmake" //设置native构建之后文件存放位置
     }
@@ -56,7 +56,7 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation deps.appcompat
     implementation 'com.google.android.material:material:1.2.1'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

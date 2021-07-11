@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_CXX_STANDARD 11)#设置语言标准
+
+project("PlayPlayer")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/${ANDROID_ABI})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/${ANDROID_ABI})
+set(CPP_DIR ${PROJECT_SOURCE_DIR}/src/main/cpp)
+add_subdirectory(${CPP_DIR})
