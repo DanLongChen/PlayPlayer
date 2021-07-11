@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)#编译本地native library的时候需要的Cmake最小版本
 
-set(out_libs "../../../libs")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${out_libs})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${out_libs})
-
-set(CMAKE_CXX_STANDARD 11)#设置语言标准
-
-set(jnilibs "../jniLibs")#赋值操作
+set(jnilibs "${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs")#赋值操作
 
 include_directories(#指定目录添加到编译器的头文件搜索路径之下，指定的目录被解释成当前源码路径的相对路径。
         util
@@ -15,13 +9,14 @@ include_directories(#指定目录添加到编译器的头文件搜索路径之�
 )
 
 file(GLOB src-files
-        ${CMAKE_SOURCE_DIR}/JNI/*.cpp)#多源文件处理（源文件很多，把所有文件一个个加入很麻烦）
+        ${CMAKE_CURRENT_SOURCE_DIR}/JNI/*.cpp)#多源文件处理（源文件很多，把所有文件一个个加入很麻烦）
 
 add_library(#添加一个库
     native-render#库的名字
         SHARED#类型（STATIC是静态库）
         ${src-files}#库的源文件
 )
+set_target_properties(native-render PROPERTIES OUTPUT_NAME "librender")
 
 find_library(#用于查找库
         log-lib
@@ -29,6 +24,7 @@ find_library(#用于查找库
 
 add_library(assimp SHARED IMPORTED )
 set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${jnilibs}/${ANDROID_ABI}/libassimp.so)
+#message(SEND_ERROR "${jnilibs}/${ANDROID_ABI}/libassimp.so")#这里只是打印信息
 
 add_library(opencv_java3 SHARED IMPORTED )
 set_target_properties(opencv_java3 PROPERTIES IMPORTED_LOCATION ${jnilibs}/${ANDROID_ABI}/libopencv_java3.so)
