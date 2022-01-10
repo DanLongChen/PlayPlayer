@@ -1,5 +1,4 @@
 package com.chiron.playpalyer.media.muxer
-
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaMuxer
@@ -9,7 +8,6 @@ import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
-
 class MMuxer {
     private val TAG ="MMuxer"
     private var mPath:String
