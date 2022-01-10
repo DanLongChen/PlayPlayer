@@ -1,6 +1,6 @@
-package com.chiron.playpalyer.mediac
+package com.chiron.playpalyer.media;
 
-enum class DecodeState {
+public enum DecodeState {
     /**開始狀態*/
     START,
     /**解碼中*/
@@ -13,5 +13,4 @@ enum class DecodeState {
     FINISH,
     /**解碼器釋放*/
     STOP
-
 }

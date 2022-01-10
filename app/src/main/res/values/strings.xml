@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">PlayPlayer</string>
+
+    <string name="start_media_ac">Start Media</string>
+    <string name="start_recorder_ac">Start Recorder</string>
+
+    <string name="media_recorder_title">Media Recorder</string>
+    <string name="media_recorder_start_record">Start Record</string>
+    <string name="media_recorder_stop_record">Stop Record</string>
+    <string name="audio_recorder_title">Audio Recorder</string>
 </resources>
