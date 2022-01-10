@@ -1,17 +1,17 @@
-package com.chiron.playpalyer.mediac.muxer
+package com.chiron.playpalyer.media.muxer
 
 import android.media.MediaCodec
 import android.util.Log
-import com.chiron.playpalyer.mediac.extractor.AudioExtractor
-import com.chiron.playpalyer.mediac.extractor.VideoExtractor
+import com.chiron.playpalyer.media.extractor.AudioExtractor
+import com.chiron.playpalyer.media.extractor.VideoExtractor
 import java.nio.ByteBuffer
 
 class MP4Repack(path:String) {
     private val TAG="MP4Repack"
 
     //初始化音视频分离器
-    private val mAExtractor:AudioExtractor= AudioExtractor(path)
-    private val mVExtractor:VideoExtractor= VideoExtractor(path)
+    private val mAExtractor: AudioExtractor = AudioExtractor(path)
+    private val mVExtractor: VideoExtractor = VideoExtractor(path)
 
     //初始化封装器
     private val mMuxer:MMuxer= MMuxer()

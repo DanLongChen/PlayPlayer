@@ -1,4 +1,4 @@
-package com.chiron.playpalyer.mediac.muxer
+package com.chiron.playpalyer.media.muxer
 
 import android.media.MediaCodec
 import android.media.MediaFormat
