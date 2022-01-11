@@ -25,6 +25,8 @@ public class MediaRecorderHandler {
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         //设置比特率
         mMediaRecorder.setAudioEncodingBitRate(16000);
+        //设置采样率
+        mMediaRecorder.setAudioSamplingRate(16000);
         //设置文件输出格式
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         //设置音频文件编码格式
