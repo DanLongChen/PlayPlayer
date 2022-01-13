@@ -48,4 +48,22 @@
         app:layout_constraintTop_toBottomOf="@id/view"
         android:text="@string/audio_recorder_title"/>
 
+    <Button
+        android:id="@+id/btn_audio_recorder_start_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/tv_audio_recorder_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        style="@style/Text_Style"
+        android:text="@string/media_recorder_start_record"/>
+
+    <Button
+        android:id="@+id/btn_audio_recorder_stop_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/btn_audio_recorder_start_record"
+        app:layout_constraintLeft_toLeftOf="parent"
+        style="@style/Text_Style"
+        android:text="@string/media_recorder_stop_record"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
