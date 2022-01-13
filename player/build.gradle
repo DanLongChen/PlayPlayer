@@ -52,6 +52,7 @@ android {
             minifyEnabled false
         }
     }
+    ndkVersion '20.1.5948944'
 }
 
 dependencies {
