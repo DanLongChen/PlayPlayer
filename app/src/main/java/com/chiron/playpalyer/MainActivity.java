@@ -4,15 +4,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.chiron.playpalyer.permission.Permission;
-import com.chiron.playpalyer.permission.PermissionUtil;
+import com.chiron.playpalyer.utils.PermissionUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int REQUEST_CODE = 1;
@@ -28,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initUi(){
         findViewById(R.id.btn_media).setOnClickListener(this);
         findViewById(R.id.btn_recorder).setOnClickListener(this);
+        findViewById(R.id.btn_new_recorder).setOnClickListener(this);
     }
 
     @Override
@@ -41,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.btn_recorder: {
                 Intent intent = new Intent(MainActivity.this, RecorderActivity.class);
+                startActivity(intent);
+                break;
+            }
+
+            case R.id.btn_new_recorder:{
+                Intent intent = new Intent(MainActivity.this, NewRecorderActivity.class);
                 startActivity(intent);
                 break;
             }

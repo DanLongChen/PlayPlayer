@@ -1,24 +1,20 @@
 package com.chiron.playpalyer;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.chiron.playpalyer.media.DecodeState;
 import com.chiron.playpalyer.media.decoder.AudioDecoder;
 import com.chiron.playpalyer.media.decoder.VideoDecoder;
 import com.chiron.playpalyer.media.muxer.MP4Repack;
 import com.chiron.playpalyer.media.player.MediaPlayer;
-import com.chiron.playpalyer.permission.Permission;
 import com.chiron.playpalyer.widget.PlayerTextureView;
 
 import java.io.BufferedInputStream;

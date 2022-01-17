@@ -1,4 +1,4 @@
-package com.chiron.playpalyer.permission;
+package com.chiron.playpalyer.utils;
 
 import android.app.Activity;
 import android.content.Context;

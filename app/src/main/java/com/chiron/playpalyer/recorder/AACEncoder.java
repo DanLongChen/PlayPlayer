@@ -5,6 +5,7 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
 import com.chiron.playpalyer.recorder.interfaces.EncodedDataCallback;
+import com.chiron.playpalyer.utils.ADTSUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -99,12 +100,15 @@ public class AACEncoder {
         }
     }
 
-    //编码PCM数据为AAC并且保存
+    //编码PCM数据为AAC并且通过callback传出
     private void encodePCM(){
         int inputIndex;
         ByteBuffer inputBuffer;
         int outputIndex;
         ByteBuffer outputBuffer;
+        int outBitSize = -1;
+        int outPackSize = -1;
+        byte[] chunkAudio;
 
         byte[] chunkPCM = getPCMData();
         if(chunkPCM==null){
@@ -121,9 +125,18 @@ public class AACEncoder {
         }
         outputIndex = mAudioEncoder.dequeueOutputBuffer(mAudioEncodeBufferInfo, 2000);
         while (outputIndex >= 0) {
+            //添加ADTS头部的操作
+            outBitSize = mAudioEncodeBufferInfo.size;//获取到编码后数据大小
+            outPackSize = outBitSize+7;
             outputBuffer = encoderOutputBuffers[outputIndex];
+            outputBuffer.position(mAudioEncodeBufferInfo.offset);//定位到起始位置
+            outputBuffer.limit(mAudioEncodeBufferInfo.offset + outBitSize);
+            chunkAudio = new byte[outPackSize];
+            ADTSUtil.addADTStoPacket(ADTSUtil.getSampleRateType(mAudioSampleRate), chunkAudio, outPackSize);
+            outputBuffer.get(chunkAudio, 7, outBitSize);//将编码得到的AAC数据 取出到byte[]中 偏移量offset=7
+            outputBuffer.position(mAudioEncodeBufferInfo.offset);
             if (mEncodedDataCallback != null) {
-                mEncodedDataCallback.onAudioEncodedCallbacl(outputBuffer, mAudioEncodeBufferInfo);
+                mEncodedDataCallback.onAudioEncodedCallback(chunkAudio, mAudioEncodeBufferInfo);
             }
             mAudioEncoder.releaseOutputBuffer(outputIndex, false);
             outputIndex = mAudioEncoder.dequeueOutputBuffer(mAudioEncodeBufferInfo, 2000);
