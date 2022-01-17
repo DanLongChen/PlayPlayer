@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RecorderActivity"></activity>
+        <activity android:name=".NewRecorderActivity"></activity>
+        <activity android:name=".RecorderActivity" />
         <activity android:name=".MediaActivity" />
         <activity
             android:name=".MainActivity"
