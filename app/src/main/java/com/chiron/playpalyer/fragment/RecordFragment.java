@@ -235,7 +235,8 @@ public class RecordFragment extends Fragment {
     }
 
     private File getSavedPath() {
-        String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis())) + "_" + String.valueOf(mDuration) + "_Audio.aac";
+//        String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis())) + "_" + String.valueOf(mDuration) + "_Audio.aac";
+        String fileName = "Audio"+System.currentTimeMillis()+"_"+String.valueOf(mDuration)+"_test.aac";
         savePath = new File(FileUtil.getMainDir(getActivity().getExternalFilesDir(""), "RecordFile"), fileName);
         SharedPreferencesUtil.getInstance(getActivity()).putSP(fileName, savePath.getAbsolutePath());
         return savePath;
@@ -325,7 +326,7 @@ public class RecordFragment extends Fragment {
 
     private File getDataSourceFile(){
         if(mTempBos!=null && mTempBos.size()>0){
-            String fileName = simpleDateFormat.format(new Date(System.currentTimeMillis()))+"-AudioCache.aac";
+            String fileName = "cachedAudio.aac";
             File file = new File(FileUtil.getMainDir(getActivity().getExternalCacheDir(),"RecordFile"), fileName);
             byte[] newData = Arrays.copyOf(mTempBos.toByteArray(),mTempBos.size());
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(newData);
@@ -364,7 +365,7 @@ public class RecordFragment extends Fragment {
     private void startPlay(){
         synchronized (mLock){
             try {
-                mLock.wait(3000);
+                mLock.wait(1000);
                 Log.e(TAG,"拿到文件路径，继续运行: "+cacheFile.getAbsolutePath());
                 audioPlayBackHandler.startPlay(cacheFile.getAbsolutePath());
             } catch (InterruptedException e) {

@@ -155,10 +155,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     @Override
     public int getItemCount() {
-        return linkedHashMap.size();
+        return SharedPreferencesUtil.getInstance(mContext).getAllData().size();
     }
 
     public RecordingItem getItem(int position) {
+        linkedHashMap = SharedPreferencesUtil.getInstance(mContext).getAllData();
         int i=0;
         RecordingItem result = new RecordingItem("NA","NA");
         for (Map.Entry<String, String> entry : linkedHashMap.entrySet()) {
