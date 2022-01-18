@@ -139,7 +139,6 @@ public class RecorderActivity extends AppCompatActivity implements View.OnClickL
 
     private void startPlay(){
         AudioPlayBackHandler playBackHandler = new AudioPlayBackHandler();
-//        playBackHandler.startPlay(savePath.getAbsolutePath());
-        playBackHandler.startPlay("/storage/emulated/0/Android/data/com.chiron.playpalyer/cache/RecordFile/2022-01-17$01:21:20-AudioCache.aac");
+        playBackHandler.startPlay(savePath.getAbsolutePath());
     }
 }

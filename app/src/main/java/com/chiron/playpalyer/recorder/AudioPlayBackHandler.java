@@ -6,10 +6,9 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 
 public class AudioPlayBackHandler {
-    private MediaPlayer mMediaPlayer = null;
+    private MediaPlayer mMediaPlayer = new MediaPlayer();
     private boolean isPlaying = false;
     public void startPlay(String filePath){
-        mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(filePath);
             mMediaPlayer.prepare();
@@ -50,8 +49,8 @@ public class AudioPlayBackHandler {
         if(mMediaPlayer!=null && isPlaying){
             mMediaPlayer.stop();
             mMediaPlayer.reset();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
+//            mMediaPlayer.release();
+//            mMediaPlayer = null;
         }
     }
 }
