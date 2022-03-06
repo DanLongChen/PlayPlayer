@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.chiron.playpalyer.recorder.interfaces.EncodedDataCallback;
 import com.chiron.playpalyer.utils.ADTSUtil;
+import com.chiron.playpalyer.utils.BackGroudLooper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -80,7 +81,7 @@ public class AsyncAACEncoder {
 
     public void config(AudioConfig audioConfig){
         mQueue = new ArrayBlockingQueue<>(20);
-        codecHandler = new CodecHandler(new HandlerThread("handler_thread").getLooper());
+        codecHandler = new CodecHandler(BackGroudLooper.getLooper());
         if (audioConfig != null) {
             mAudioChannelCount = audioConfig.getAudioChannelCount();
             mAudioSampleRate = audioConfig.getAudioSampleRate();

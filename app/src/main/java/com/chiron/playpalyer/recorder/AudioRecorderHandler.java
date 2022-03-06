@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -13,8 +14,10 @@ import kotlin.jvm.Synchronized;
 
 //PMC数据获取
 public class AudioRecorderHandler {
+    private static final String TAG = AudioRecorderHandler.class.getSimpleName();
     private volatile static AudioRecorderHandler mInstance = null;
-    private final static int[] SAMPLE_RATES = {44100,22050,16000,11025};
+//    private final static int[] SAMPLE_RATES = {44100,22050,16000,11025};
+    private final static int[] SAMPLE_RATES = {16000};
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
     private int audioSource = MediaRecorder.AudioSource.MIC;
@@ -43,11 +46,11 @@ public class AudioRecorderHandler {
     public AudioRecord init(){
         for (int sampleRate:SAMPLE_RATES){
             //计算最小的bufferSize
-            mBufferSize = 2*AudioRecord.getMinBufferSize(sampleRate,channelConfig,audioFormat);
+            mBufferSize = AudioRecord.getMinBufferSize(sampleRate,channelConfig,audioFormat);
             mAudioRecorder = new AudioRecord(audioSource,sampleRate,channelConfig,audioFormat,mBufferSize);
             if (mAudioRecorder.getState() == AudioRecord.STATE_INITIALIZED
                     && mBufferSize <= MAX_BUFFER_SIZE) {
-                mAudioBuffer = new byte[Math.min(4096,mBufferSize)];
+                mAudioBuffer = new byte[Math.min(1280,mBufferSize)];
                 return mAudioRecorder;
             }
         }
@@ -106,15 +109,17 @@ public class AudioRecorderHandler {
     //开启线程，不断从AudioRecord中读取数据
     private class ReadDataThread extends Thread {
         int index = 0;
-
+        int totalSize = 0;
         @Override
         public void run() {
             super.run();
             while (isRecording && mAudioRecorder != null) {
                 int size = mAudioRecorder.read(mAudioBuffer, 0, mAudioBuffer.length);
-                if (size < 0) {
+                if (size <= 0) {
                     continue;
                 }
+                totalSize+=size;
+                Log.e(TAG,"totalSize: "+totalSize);
                 if (isRecording) {
                     byte[] data = new byte[size];
                     System.arraycopy(mAudioBuffer, 0, data, 0, size);
