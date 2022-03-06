@@ -2,7 +2,11 @@ package com.chiron.playpalyer;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,6 +18,7 @@ import com.chiron.playpalyer.utils.PermissionUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int REQUEST_CODE = 1;
+    private static final String TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +26,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PermissionUtil permissionUtil = new PermissionUtil();
         permissionUtil.verifyPermission(this);
         initUi();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            MediaCodecList list = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
+            MediaCodecInfo[] supportCodes = list.getCodecInfos();
+            Log.i(TAG, "解码器列表：");
+            for (MediaCodecInfo codec : supportCodes) {
+                if (!codec.isEncoder()) {
+                    String name = codec.getName();
+                    if (name.startsWith("OMX.google")) {
+                        Log.i(TAG, "软解->" + name);
+                    }
+                }
+            }
+            for (MediaCodecInfo codec : supportCodes) {
+                if (!codec.isEncoder()) {
+                    String name = codec.getName();
+                    if (!name.startsWith("OMX.google")) {
+                        Log.i(TAG, "硬解->" + name);
+                    }
+                }
+            }
+            Log.i(TAG, "编码器列表：");
+            for (MediaCodecInfo codec : supportCodes) {
+                if (codec.isEncoder()) {
+                    String name = codec.getName();
+                    if (name.startsWith("OMX.google")) {
+                        Log.i(TAG, "软编->" + name);
+                    }
+                }
+            }
+            for (MediaCodecInfo codec : supportCodes) {
+                if (codec.isEncoder()) {
+                    String name = codec.getName();
+                    if (!name.startsWith("OMX.google")) {
+                        Log.i(TAG, "硬编->" + name);
+                    }
+                }
+            }
+
+            Log.i(TAG,"硬件=>"+Build.HARDWARE);
+        }
     }
 
     private void initUi(){

@@ -2,6 +2,7 @@ package com.chiron.playpalyer.media;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -184,7 +185,12 @@ public abstract class BaseDecoder implements IDecoder{
         try {
             //根据音视频编码格式创建codec
             String type = mExtractor.getFormat().getString(MediaFormat.KEY_MIME);
-            mCodec = MediaCodec.createDecoderByType(type);
+            if ("raven".equals(Build.HARDWARE) && "video/avc".equals(type)) {
+                Log.e("Daniel,","type: "+type);
+                mCodec = MediaCodec.createByCodecName("c2.exynos.h264.decoder");
+            } else {
+                mCodec = MediaCodec.createDecoderByType(type);
+            }
             //配置解码器，没有配置则一直等待
             if(!configDecodec(mCodec,mExtractor.getFormat())){
                 Log.d("Daniel","configDecodec failed!");
@@ -192,6 +198,7 @@ public abstract class BaseDecoder implements IDecoder{
             }
 
             mCodec.start();
+            Log.d("Daniel","codec start");
             mInputBuffers = mCodec.getInputBuffers();
             mOutputBuffers = mCodec.getOutputBuffers();
         } catch (IOException e) {
